@@ -1,0 +1,42 @@
+{
+	"Products": [
+		{
+			"id": 1,
+			"name": "Solo Leveling",
+			"description": "Dez anos atrás, depois do Portal que conecta o mundo real com um mundo de montros se abriu, algumas pessoas comuns receberam o poder de caçar os monstros do portal.",
+			"price": 49.90
+		},
+		
+		{
+			"id": 2,
+			"name": "Tokyo Revengers",
+			"description": "Takemichi é um virgem desempregado de 26 anos que descobre que a garota que ele namorou durante o ensino médio - a única que ele já namorou - morreu.",
+			"price": 39.00
+		},
+		
+		{
+			"id": 3,
+			"name": "Kimetsu no Yaiba",
+			"description": "O mangá conta a história de Tanjiro, o filho mais velho de uma família que é massacrada por um demônio e, a única sobrevivente do incidente foi umas das suas irmãs, que por causa do massacre acaba se transformando em um demônio.",
+			"price": 26.90
+		},
+		
+		{
+			"id": 4,
+			"name": "Boku no Hero Academia",
+			"description": "A série conta a história de Midoriya Izuku, um garoto tímido e fraco cujo sonho é ser um herói.",
+			"price": 56.00
+		},
+		
+		{
+			"id": 5,
+			"name": "One Piece",
+			"description": "Quem é, quem é JoyBoy???",
+			"price": 32.00
+		}
+	],
+	
+	"ShopCarts": [
+		
+	]
+}
