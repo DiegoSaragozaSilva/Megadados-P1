@@ -89,6 +89,17 @@ async def delete_products(product_id : int):
             for relation in db["ShopCarts_Products"]:
                 if relation["product_id"] == product_id:
                     db["ShopCarts_Products"].remove(relation)
+
+                    still_has_cart_id = False
+                    for _relation in db["ShopCarts_Products"]:
+                        if _relation["cart_id"] == relation["cart_id"]:
+                            still_has_cart_id = True
+                            break
+
+                    if not still_has_cart_id:
+                        for cart in db["ShopCarts"]:
+                            if cart["id"] == relation["cart_id"]:
+                                db["ShopCarts"].remove(cart)
             
             with open("db.json", "w", encoding = "utf-8") as file:
                 json.dump(db, file)
