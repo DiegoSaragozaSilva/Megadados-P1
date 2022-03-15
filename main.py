@@ -1,5 +1,6 @@
-from fastapi import FastAPI, HTTPException, Body
+from fastapi import FastAPI, HTTPException
 from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from typing import Optional
 import json
@@ -104,7 +105,7 @@ async def delete_products(product_id : int):
             with open("db.json", "w", encoding = "utf-8") as file:
                 json.dump(db, file)
             
-            raise HTTPException(status_code = 200, detail = "Product deleted")
+            return JSONResponse(status_code = 200, content={ "detail": "Product deleted" })
                 
     raise HTTPException(status_code = 404, detail = "Product not found")
 
