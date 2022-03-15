@@ -1,7 +1,7 @@
 # GET 		/products/
 # GET 		/products/{product_id}/
 # POST 		/products/
-# PUT 		/products/{product_id}/
+# PATCH 	/products/{product_id}/
 # DELETE 	/products/{product_id}/
 
 from fastapi import FastAPI, HTTPException, Body
@@ -17,10 +17,10 @@ with open("db.json", "r", encoding = "utf-8") as file:
 app = FastAPI()
 
 class Product(BaseModel):
-	id : int = Field(..., example = 9)
-	name : str = Field(..., example = "Dragon Ball")
-	description : Optional[str] = Field(..., example = "Dragon Ball é um mangá japonês criado por Akira Toriyama e publicado na revista Weekly Shounen Jump, a partir de 1986.")
-	price : float = Field(..., example = 9.90)
+	id : Optional[int] = Field(None, example = 9)
+	name : Optional[str] = Field(None, example = "Dragon Ball")
+	description : Optional[str] = Field(None, example = "Dragon Ball é um mangá japonês criado por Akira Toriyama e publicado na revista Weekly Shounen Jump, a partir de 1986.")
+	price : Optional[float] = Field(None, example = 9.90)
 	
 
 @app.get("/products/")
@@ -46,3 +46,24 @@ async def post_products(product : Product):
 	
 	with open("db.json", "w", encoding = "utf-8") as file:
 		json.dump(DB, file)
+		
+	return product
+		
+@app.patch("/products/{product_id}/")
+async def put_products(product_id : int, product : Product):
+	i = 0
+	for _product in DB["Products"]:
+		if _product["id"] == product_id:
+		
+			stored_product = Product(**_product)
+			update_data = product.dict(exclude_unset = True)
+			update_product = stored_product.copy(update = update_data)
+			DB["Products"][i] = jsonable_encoder(update_product) 
+		
+			with open("db.json", "w", encoding = "utf-8") as file:
+				json.dump(DB, file)
+		
+			return DB["Products"][i]
+		i += 1
+		
+	raise HTTPException(status_code = 404, detail = "Product not found")
