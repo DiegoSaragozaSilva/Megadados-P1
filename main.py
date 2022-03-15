@@ -27,8 +27,8 @@ class ShopCart(BaseModel):
     owner_id: Optional[int] = Field(None, example=1)
 
 class ShopCart_Product(BaseModel):
-    cart_id: int = Field(..., example=3)
-    product_id: int = Field(..., example=9)
+    cart_id: Optional[int] = Field(..., example=3)
+    product_id: Optional[int] = Field(..., example=9)
     quantity: int = Field(..., example=1)
 
 #################################################
@@ -117,11 +117,27 @@ async def delete_products(product_id : int):
 async def get_carts():
     return db["ShopCarts"]
 
-@app.get("/carts/{owner_id}", tags=["carts"])
-async def get_cart(owner_id : int):
+@app.get("/carts/{cart_id}", tags=["carts"])
+async def get_cart(cart_id : int):
     for cart in db["ShopCarts"]:
-        if cart["owner_id"] == owner_id:
+        if cart["id"] == cart_id:
             return cart
 
     raise HTTPException(status_code = 404, detail = "User doesn't exist or User has no carts")
-    
+
+@app.delete("/carts/{cart_id}", tags=["carts"])
+async def delete_cart(cart_id : int):
+    for cart in db["ShopCarts"]:
+        if cart["id"] == cart_id:
+            db["ShopCarts"].remove(cart)
+
+            for shopcart_product in db["ShopCarts_Products"]:
+                if shopcart_product["cart_id"] == cart_id:
+                    db["ShopCarts_Products"].remove(shopcart_product)
+
+            with open("db.json", "w", encoding = "utf-8") as file:
+                json.dump(db, file)
+            
+            return JSONResponse(status_code = 200, content={ "detail": "Cart deleted" })
+
+    raise HTTPException(status_code = 404, detail = "Cart not found")
