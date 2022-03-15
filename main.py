@@ -67,3 +67,16 @@ async def put_products(product_id : int, product : Product):
 		i += 1
 		
 	raise HTTPException(status_code = 404, detail = "Product not found")
+
+@app.delete("/products/{product_id}/")
+async def delete_products(product_id : int):
+	for _product in DB["Products"]:
+		if _product["id"] == product_id:
+			DB["Products"].remove(_product)
+			
+			with open("db.json", "w", encoding = "utf-8") as file:
+				json.dump(DB, file)
+			
+			raise HTTPException(status_code = 200, detail = "Product deleted")
+			
+	raise HTTPException(status_code = 404, detail = "Product not found")
