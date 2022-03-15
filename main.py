@@ -28,6 +28,7 @@ class ShopCart(BaseModel):
 class ShopCart_Product(BaseModel):
     cart_id: int = Field(..., example=3)
     product_id: int = Field(..., example=9)
+    quantity: int = Field(..., example=1)
 
 #################################################
 #                CRUD PRODUTOS                  #
@@ -84,6 +85,10 @@ async def delete_products(product_id : int):
     for _product in db["Products"]:
         if _product["id"] == product_id:
             db["Products"].remove(_product)
+
+            for relation in db["ShopCarts_Products"]:
+                if relation["product_id"] == product_id:
+                    db["ShopCarts_Products"].remove(relation)
             
             with open("db.json", "w", encoding = "utf-8") as file:
                 json.dump(db, file)
