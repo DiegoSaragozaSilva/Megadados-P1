@@ -19,6 +19,7 @@ app = FastAPI()
 #################################################
 
 class Product(BaseModel):
+    id: Optional[int] = Field(None, example="9")
     name: Optional[str] = Field(None, example = "Dragon Ball")
     description: Optional[str] = Field(None, example = "Dragon Ball é um mangá japonês criado por Akira Toriyama e publicado na revista Weekly Shounen Jump, a partir de 1986.")
     price: Optional[float] = Field(None, example = 9.90)
@@ -27,8 +28,8 @@ class ShopCart(BaseModel):
     id: int = Field(..., example="9")
 
 class ShopCart_Product(BaseModel):
-    cart_id: Optional[int] = Field(..., example=3)
-    product_id: Optional[int] = Field(..., example=9)
+    cart_id: int = Field(..., example=3)
+    product_id: int = Field(..., example=9)
     quantity: int = Field(..., example=1)
 
 #################################################
@@ -106,7 +107,7 @@ async def delete_product(product_id : int):
     raise HTTPException(status_code = 404, detail = "Product not found")
 
 #################################################
-#                CRUD CARRINHO                  #
+#                  CARRINHO                     #
 #################################################
 
 @app.get("/carts/{user_id}", tags=["carts"])
@@ -150,3 +151,24 @@ async def delete_cart(user_id : int):
             return JSONResponse(status_code = 200, content={ "detail": "Cart deleted" })
 
     raise HTTPException(status_code = 404, detail = "Cart not found")
+
+#################################################
+#             TABELA RELACIONAMENTO             #
+#################################################
+
+@app.post("/carts/{cart_id}", tags=["carts"])
+async def add_product_on_cart(cart_id : int, product: Product, quantity : int):
+    cart_product = {
+        "cart_id": cart_id,
+        "product_id": product.id,
+        "quantity": quantity
+    }
+    shopcart_product = ShopCart_Product(**cart_product)
+
+    db["ShopCarts_Products"].append(jsonable_encoder(shopcart_product))
+    
+    with open("db.json", "w", encoding = "utf-8") as file:
+        json.dump(db, file)
+            
+    return shopcart_product
+
