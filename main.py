@@ -25,11 +25,11 @@ class Product(BaseModel):
     price: Optional[float] = Field(None, example = 9.90)
 
 class ShopCart(BaseModel):
-    id: int = Field(..., example="9")
+    id: Optional[int] = Field(..., example="9")
 
 class ShopCart_Product(BaseModel):
-    cart_id: int = Field(..., example=3)
-    product_id: int = Field(..., example=9)
+    cart_id: Optional[int] = Field(..., example=3)
+    product_id: Optional[int] = Field(..., example=9)
     quantity: int = Field(..., example=1)
 
 #################################################
@@ -110,11 +110,11 @@ async def delete_product(product_id : int):
 #                  CARRINHO                     #
 #################################################
 
-@app.get("/carts/{user_id}", tags=["carts"])
-async def get_cart(user_id : int):
+@app.get("/carts/{cart_id}/", tags=["carts"])
+async def get_cart(cart_id : int):
     products_ids = list()
     for cart_product in db["ShopCarts_Products"]:
-        if cart_product["cart_id"] == user_id:
+        if cart_product["cart_id"] == cart_id:
             products_ids.append(cart_product["product_id"])
 
     if(len(products_ids) > 0):
@@ -123,9 +123,9 @@ async def get_cart(user_id : int):
         raise HTTPException(status_code = 404, detail = "User doesn't exist or User has no carts")
 
 @app.post("/carts/", tags=["carts"])
-async def create_cart(user_id : int):
+async def create_cart(cart_id : int):
     cart = {
-        "id": user_id
+        "id": cart_id
     }
     shopcart = ShopCart(**cart)
     db["ShopCarts"].append(jsonable_encoder(shopcart))
@@ -135,14 +135,14 @@ async def create_cart(user_id : int):
             
     return shopcart
 
-@app.delete("/carts/{user_id}", tags=["carts"])
-async def delete_cart(user_id : int):
+@app.delete("/carts/{cart_id}/", tags=["carts"])
+async def delete_cart(cart_id : int):
     for cart in db["ShopCarts"]:
-        if cart["id"] == user_id:
+        if cart["id"] == cart_id:
             db["ShopCarts"].remove(cart)
 
             for shopcart_product in db["ShopCarts_Products"]:
-                if shopcart_product["cart_id"] == user_id:
+                if shopcart_product["cart_id"] == cart_id:
                     db["ShopCarts_Products"].remove(shopcart_product)
 
             with open("db.json", "w", encoding = "utf-8") as file:
@@ -156,11 +156,11 @@ async def delete_cart(user_id : int):
 #             TABELA RELACIONAMENTO             #
 #################################################
 
-@app.post("/carts/{cart_id}", tags=["carts"])
-async def add_product_on_cart(cart_id : int, product: Product, quantity : int):
+@app.post("/carts/{cart_id}/", tags=["carts"])
+async def add_product_on_cart(cart_id : int, product_id : int, quantity : int):
     cart_product = {
         "cart_id": cart_id,
-        "product_id": product.id,
+        "product_id": product_id,
         "quantity": quantity
     }
     shopcart_product = ShopCart_Product(**cart_product)
@@ -171,4 +171,25 @@ async def add_product_on_cart(cart_id : int, product: Product, quantity : int):
         json.dump(db, file)
             
     return shopcart_product
+
+@app.patch("/carts/{cart_id}/{product_id}/", tags=["carts"])
+async def edit_item_quantity(cart_id : int, product_id : int, new_quantity : int):
+    i = 0
+    for cart_product in db["ShopCarts_Products"]:
+        if(cart_product["cart_id"] == cart_id and cart_product["product_id"] == product_id):
+    
+            stored_cart_product = Product(**cart_product)
+            update_data = {
+                "quantity": new_quantity
+            }
+            update_cart_product = stored_cart_product.copy(update = update_data)
+            db["ShopCarts_Products"][i] = jsonable_encoder(update_cart_product) 
+    
+            with open("db.json", "w", encoding = "utf-8") as file:
+                json.dump(db, file)
+    
+            return db["ShopCarts_Products"][i]
+        i += 1
+            
+    raise HTTPException(status_code = 404, detail = "Product not found")
 
