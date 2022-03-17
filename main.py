@@ -57,7 +57,7 @@ async def create_product(product : Product):
     with open("db.json", "w", encoding = "utf-8") as file:
         json.dump(db, file)
             
-    return product
+    return product_data
 		
 @app.patch("/products/{product_id}/", tags=["products"])
 async def update_product(product_id : int, product : Product):
