@@ -123,9 +123,9 @@ async def get_cart(cart_id : int):
         raise HTTPException(status_code = 404, detail = "User doesn't exist or User has no carts")
 
 @app.post("/carts/", tags=["carts"])
-async def create_cart(cart_id : int):
+async def create_cart(user_id : int):
     cart = {
-        "id": cart_id
+        "id": user_id
     }
     shopcart = ShopCart(**cart)
     db["ShopCarts"].append(jsonable_encoder(shopcart))
