@@ -19,13 +19,13 @@ app = FastAPI()
 #################################################
 
 class Product(BaseModel):
-    id: Optional[int] = Field(None, example="9")
-    name: Optional[str] = Field(None, example = "Dragon Ball")
+    id: Optional[int] = Field(None, example=9)
+    name: Optional[str] = Field(None, example = "Dragon Ball - Vol 1")
     description: Optional[str] = Field(None, example = "Dragon Ball é um mangá japonês criado por Akira Toriyama e publicado na revista Weekly Shounen Jump, a partir de 1986.")
     price: Optional[float] = Field(None, example = 9.90)
 
 class ShopCart(BaseModel):
-    id: Optional[int] = Field(..., example="9")
+    id: Optional[int] = Field(..., example=9)
 
 class ShopCart_Product(BaseModel):
     cart_id: Optional[int] = Field(..., example=3)
