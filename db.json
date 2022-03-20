@@ -1,1 +1,48 @@
-{"Products": [{"id": 1, "name": "Dragon Ball", "description": "Dragon Ball \u00e9 um mang\u00e1 japon\u00eas criado por Akira Toriyama e publicado na revista Weekly Shounen Jump, a partir de 1986.", "price": 19.9}, {"id": 2, "name": "Tokyo Revengers", "description": "Takemichi \u00e9 um virgem desempregado de 26 anos que descobre que a garota que ele namorou durante o ensino m\u00e9dio - a \u00fanica que ele j\u00e1 namorou - morreu.", "price": 39.0}], "ShopCarts": [{"id": 0}, {"id": 0}], "ShopCarts_Products": [{"cart_id": 0, "product_id": 1, "quantity": 10}, {"cart_id": 0, "product_id": 2, "quantity": 4}]}
+{
+    "Products":[
+        {
+            "id": 1,
+            "title": "Cueca Nerd SQL",
+            "description": "A cueca geek mais popular no mercado",
+            "price": 19.9
+        },
+        {
+            "id": 2,
+            "title": "Bota Geek Python",
+            "description": "Tem uma cobra na minha bota!",
+            "price": 59.9
+        }
+        {
+            "id": 3,
+            "title": "Bermuda Javascript",
+            "description": "Bermuda muito boa, bem popular entre os jovens, mas pouco otimizada",
+            "price": 129.9
+        }
+
+    ],
+    "ShopCarts":[
+        {
+            "id": 1
+        },
+        {
+            "id": 2
+        }
+    ],
+    "ShopCarts_Products":[
+        {
+            "cart_id": 1,
+            "product_id": 1,
+            "quantity": 1
+        },
+        {
+            "cart_id": 1,
+            "product_id": 3,
+            "quantity": 2
+        }
+        {
+            "cart_id": 2,
+            "product_id": 3,
+            "quantity": 1
+        }
+    ]
+}
