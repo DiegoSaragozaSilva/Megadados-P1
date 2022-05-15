@@ -1,7 +1,0 @@
-HOST=localhost
-USER=megadados
-PASSWORD=megadados
-DATABASE=ecommerce
-PROVIDER=mysql
-DRIVER=mysqlconnector
-URL=${PROVIDER}+${DRIVER}://${USER}:${PASSWORD}@${HOST}:${PORT}/${DATABASE}
