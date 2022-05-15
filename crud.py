@@ -1,84 +1,78 @@
 from sqlalchemy.orm import Session
-from . import models, schemas
+from fastapi import Response
+import models, schemas
 
-def createProduto(db : Session, produto : schemas.ProdutoCreate):
+def create_produto(db : Session, produto : schemas.ProdutoCreate):
     db_produto = models.Produto(titulo = produto.titulo, descricao = produto.descricao, preco = produto.preco)
     db.add(db_produto)
     db.commit()
     db.refresh(db_produto)
     return db_produto
 
-def getProduto(db : Session, idProduto : int):
+def get_produto(db : Session, idProduto : int):
     return db.query(models.Produto).filter(models.Produto.idProduto == idProduto).first()
 
-def getProdutos(db : Session, skip : int = 0, limit : int = 10):
+def get_produtos(db : Session, skip : int = 0, limit : int = 10):
     return db.query(models.Produto).offset(skip).limit(limit).all()
 
-def updateProduto(db : Session, idProduto : int, produto : dict):
-    db_produto = db.query(models.Produto).filter(models.Produto.idProduto == idProduto)
-    db_produto.update(produto)
-    db.commit()
-    db.refresh(db_produto)
-    return db_produto
+def update_produto(db : Session, idProduto : int, update : schemas.ProdutoCreate):
+    update_data = update.dict()
+    update_data["idProduto"] = idProduto
 
-def deleteProduto(db : Session, idProduto : int):
-    db_produto = db.query(models.Produto).filter(models.Produto.idProduto == idProduto)
-    db_produto.delete()
+    db.query(models.Produto).filter(models.Produto.idProduto == idProduto).update(update_data)
     db.commit()
-    return db_produto
+    return update_data
+
+def delete_produto(db : Session, idProduto : int):
+    db_produto = get_produto(db, idProduto)
+    if db_produto:
+        db.delete(db_produto)
+        db.commit()
+        return Response(status_code=200, content = "Successfully deleted", media_type="application/json")
 
 #########################################################################################################
 
-def createCarrinho(db : Session, carrinho : schemas.CarrinhoCreate):
+def create_carrinho(db : Session):
     db_carrinho = models.Carrinho()
     db.add(db_carrinho)
     db.commit()
     db.refresh(db_carrinho)
     return db_carrinho
 
-def getCarrinho(db : Session, idCarrinho : int):
-    return db.query(models.Carrinho).filter(models.Carrinho.idCarrinho == idCarrinho).first()
+def get_carrinho(db : Session, idCarrinho : int, skip : int = 0, limit : int = 10):
+    return db.query(models.ProdutoCarrinho).filter(models.ProdutoCarrinho.idCarrinho == idCarrinho).offset(skip).limit(limit).all()
 
-def getCarrinhos(db : Session, skip : int = 0, limit : int = 10):
-    return db.query(models.Carrinho).offset(skip).limit(limit).all()
-
-def updateCarrinho(db : Session, idProduto : int, carrinho : dict):
-    db_carrinho = db.query(models.Carrinho).filter(models.Carrinho.idCarrinho == idCarrinho)
-    db_carrinho.update(carrinho)
-    db.commit()
-    db.refresh(db_carrinho)
-    return db_carrinho
-
-def deleteCarrinho(db : Session, idCarrinho : int):
-    db_carrinho = db.query(models.Carrinho).filter(models.Carrinho.idCarrinho == idCarrinho)
-    db_carrinho.delete()
-    db.commit()
-    return db_carrinho
+def delete_carrinho(db : Session, idCarrinho : int):
+    db_carrinho = db.query(models.Carrinho).filter(models.Carrinho.idCarrinho == idCarrinho).first()
+    if db_carrinho:
+        db.delete(db_carrinho)
+        db.commit()
+        return Response(status_code=200, content = "Successfully deleted", media_type="application/json")
 
 #########################################################################################################
 
-def createProdutoCarrinho(db : Session, idProduto : int, idCarrinho : int, quantidade : int):
-    db_ProdutoCarrinho = models.ProdutoCarrinho(idProduto = idProduto, idCarrinho = idCarrinho, quantitade = quantidade)
+def insert_produto(db : Session, idProduto : int, idCarrinho : int, insert : schemas.ProdutoCarrinhoCreate):
+    db_ProdutoCarrinho = models.ProdutoCarrinho(idProduto = idProduto, idCarrinho = idCarrinho, quantidade = insert.quantidade)
     db.add(db_ProdutoCarrinho)
     db.commit()
     db.refresh(db_ProdutoCarrinho)
     return db_ProdutoCarrinho
 
-def getProdutosFromCarrinho(db : Session, idCarrinho : int, skip : int = 0, limit : int = 10):
-    return db.query(models.ProdutoCarrinho).filter(models.ProdutoCarrinho.idCarrinho == idCarrinho).offset(skip).limit(limit).all()
-
-def getProdutoCarrinhos(db : Session, skip : int = 0, limit : int = 10):
+def get_produto_carrinho_relations(db : Session, skip : int = 0, limit : int = 10):
     return db.query(models.ProdutoCarrinho).offset(skip).limit(limit).all()
 
-def updateProdutoCarrinho(db : Session, idProduto : int, idCarrinho : int, ProdutoCarrinho : dict):
-    db_ProdutoCarrinho = db.query(models.ProdutoCarrinho).filter(models.ProdutoCarrinho.idProduto == idProduto and models.ProdutoCarrinho.idCarrinho == idCarrinho)
-    db_ProdutoCarrinho.update(ProdutoCarrinho)
-    db.commit()
-    db.refresh(db_ProdutoCarrinho)
-    return db_ProdutoCarrinho
+def update_quantidade(db : Session, idCarrinho : int, idProduto : int, update : schemas.ProdutoCarrinhoCreate):
+    update_data = update.dict()
+    update_data["idCarrinho"] = idCarrinho
+    update_data["idProduto"] = idProduto
 
-def deleteProdutoCarrinho(db : Session, idProduto : int, idCarrinho : int):
-    db_ProdutoCarrinho = db.query(models.ProdutoCarrinho).filter(models.ProdutoCarrinho.idProduto == idProduto and models.ProdutoCarrinho.idCarrinho == idCarrinho)
-    db_ProdutoCarrinho.delete()
+    db.query(models.ProdutoCarrinho).filter(models.ProdutoCarrinho.idCarrinho == idCarrinho and  models.ProdutoCarrinho.idProduto == idProduto).update(update_data)
     db.commit()
-    return db_ProdutoCarrinho
+    return update_data
+
+def remove_produto_from_carrinho(db : Session, idProduto : int, idCarrinho : int):
+    db_produto = db.query(models.ProdutoCarrinho).filter(models.ProdutoCarrinho.idProduto == idProduto and models.ProdutoCarrinho.idCarrinho == idCarrinho).first()
+    if db_produto:
+        db.delete(db_produto)
+        db.commit()
+        return Response(status_code=200, content = "Successfully deleted", media_type="application/json")

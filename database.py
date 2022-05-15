@@ -5,7 +5,7 @@ from dotenv import dotenv_values
 
 env = dotenv_values()
 
-engine = create_engine(env['URL'])
+engine = create_engine(env.get('URL'))
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
