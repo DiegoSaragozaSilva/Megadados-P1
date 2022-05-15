@@ -57,28 +57,28 @@ def deleteCarrinho(db : Session, idCarrinho : int):
 
 #########################################################################################################
 
-def createProdutoCarrinho(db : Session, ProdutoCarrinho : schemas.ProdutoCarrinhoCreate):
-    db_ProdutoCarrinho = models.ProdutoCarrinho(quantidade = ProdutoCarrinho.quantidade)
+def createProdutoCarrinho(db : Session, idProduto : int, idCarrinho : int, quantidade : int):
+    db_ProdutoCarrinho = models.ProdutoCarrinho(idProduto = idProduto, idCarrinho = idCarrinho, quantitade = quantidade)
     db.add(db_ProdutoCarrinho)
     db.commit()
     db.refresh(db_ProdutoCarrinho)
     return db_ProdutoCarrinho
 
-def getProdutoCarrinho(db : Session, idProdutoCarrinho : int):
-    return db.query(models.ProdutoCarrinho).filter(models.ProdutoCarrinho.idProdutoCarrinho == idProdutoCarrinho).first()
+def getProdutosFromCarrinho(db : Session, idCarrinho : int, skip : int = 0, limit : int = 10):
+    return db.query(models.ProdutoCarrinho).filter(models.ProdutoCarrinho.idCarrinho == idCarrinho).offset(skip).limit(limit).all()
 
 def getProdutoCarrinhos(db : Session, skip : int = 0, limit : int = 10):
     return db.query(models.ProdutoCarrinho).offset(skip).limit(limit).all()
 
-def updateProdutoCarrinho(db : Session, idProdutoCarrinho : int, ProdutoCarrinho : dict):
-    db_ProdutoCarrinho = db.query(models.ProdutoCarrinho).filter(models.ProdutoCarrinho.idProdutoCarrinho == idProdutoCarrinho)
+def updateProdutoCarrinho(db : Session, idProduto : int, idCarrinho : int, ProdutoCarrinho : dict):
+    db_ProdutoCarrinho = db.query(models.ProdutoCarrinho).filter(models.ProdutoCarrinho.idProduto == idProduto and models.ProdutoCarrinho.idCarrinho == idCarrinho)
     db_ProdutoCarrinho.update(ProdutoCarrinho)
     db.commit()
     db.refresh(db_ProdutoCarrinho)
     return db_ProdutoCarrinho
 
-def deleteProdutoCarrinho(db : Session, idProdutoCarrinho : int):
-    db_ProdutoCarrinho = db.query(models.ProdutoCarrinho).filter(models.ProdutoCarrinho.idProdutoCarrinho == idProdutoCarrinho)
+def deleteProdutoCarrinho(db : Session, idProduto : int, idCarrinho : int):
+    db_ProdutoCarrinho = db.query(models.ProdutoCarrinho).filter(models.ProdutoCarrinho.idProduto == idProduto and models.ProdutoCarrinho.idCarrinho == idCarrinho)
     db_ProdutoCarrinho.delete()
     db.commit()
     return db_ProdutoCarrinho
